@@ -1,6 +1,6 @@
-import { gql } from "apollo-server";
+const { gql } = require("apollo-server");
 
-export const typeDefs = gql`
+const typeDefs = gql`
   type Launch {
     id: ID!
     site: String
@@ -28,10 +28,25 @@ export const typeDefs = gql`
   }
 
   type Query {
-    launches: [Launch]
-    launch(id: ID!): Launch,
-    me: User
+    launches( # replace the current launches query with this one.
+    """
+    The number of results to show. Must be >= 1. Default = 20
+    """
+    pageSize: Int
+    """
+    If you add a cursor here, it will only return results _after_ this cursor
+    """
+    after: String
+  ): LaunchConnection!
+  launch(id: ID!): Launch
+  me: User
   }
+
+  type LaunchConnection { 
+  cursor: String!
+  hasMore: Boolean!
+  launches: [Launch]!
+}
 
   type Mutation {
     bookTrips(launchIds: [ID]!): TripUpdateResponse!
@@ -46,4 +61,4 @@ export const typeDefs = gql`
   }
 `
 
-
+module.exports = typeDefs 
